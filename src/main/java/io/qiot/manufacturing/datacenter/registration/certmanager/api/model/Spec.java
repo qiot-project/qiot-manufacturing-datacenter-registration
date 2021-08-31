@@ -1,5 +1,8 @@
 package io.qiot.manufacturing.datacenter.registration.certmanager.api.model;
 
+import static java.util.Collections.emptyMap;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,9 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import static java.util.Collections.emptyMap;
-
-import java.io.Serializable;
 
 /**
  * @author mmascia

@@ -1,5 +1,7 @@
 package io.qiot.manufacturing.datacenter.registration.certmanager.api.model.status;
 
+import static java.util.Collections.emptyMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,16 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.fabric8.kubernetes.api.model.Condition;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.UnknownPropertyPreserving;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import static java.util.Collections.emptyMap;
 
 /**
  * @author mmascia
