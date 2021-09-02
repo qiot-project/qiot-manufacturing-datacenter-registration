@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
 
@@ -35,7 +35,7 @@ public class DefaultCertificateService implements CertificateService {
     }
 
     @Override
-    public RegisterResponse provisionFactory(FactoryCertificateRequest data)
+    public CertificateResponse provisionFactory(FactoryCertificateRequest data)
             throws CertificateProvisionException {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -47,7 +47,7 @@ public class DefaultCertificateService implements CertificateService {
             LOGGER.debug("input stream of the Client KEY store: {}", ksIs);
             LOGGER.debug("input stream of the Client TRUST store: {}", tsIs);
 
-            RegisterResponse registerResponse = new RegisterResponse();
+            CertificateResponse registerResponse = new CertificateResponse();
             registerResponse.keystore = Base64.getEncoder()
                     .encodeToString(IOUtils.toByteArray(ksIs));
             registerResponse.truststore = Base64.getEncoder()
@@ -59,7 +59,7 @@ public class DefaultCertificateService implements CertificateService {
     }
 
     @Override
-    public RegisterResponse provisionMachinery(MachineryCertificateRequest data)
+    public CertificateResponse provisionMachinery(MachineryCertificateRequest data)
             throws CertificateProvisionException {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -71,7 +71,7 @@ public class DefaultCertificateService implements CertificateService {
             LOGGER.debug("input stream of the Client KEY store: {}", ksIs);
             LOGGER.debug("input stream of the Client TRUST store: {}", tsIs);
 
-            RegisterResponse registerResponse = new RegisterResponse();
+            CertificateResponse registerResponse = new CertificateResponse();
             registerResponse.keystore = Base64.getEncoder()
                     .encodeToString(IOUtils.toByteArray(ksIs));
             registerResponse.truststore = Base64.getEncoder()

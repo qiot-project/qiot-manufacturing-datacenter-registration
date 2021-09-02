@@ -13,9 +13,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
 
 @Path("/register")
@@ -42,7 +42,7 @@ public class RegisterResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public RegisterResponse registerFactory(@Valid FactoryCertificateRequest data)
+    public CertificateResponse registerFactory(@Valid FactoryCertificateRequest data)
             throws Exception {
         LOGGER.debug("Received registerRequest: {}", data);
 
@@ -58,7 +58,7 @@ public class RegisterResource {
         // request \n{}",
         // stationId, data);
 
-        RegisterResponse response = certificateService.provisionFactory(data);
+        CertificateResponse response = certificateService.provisionFactory(data);
 
         LOGGER.debug(
                 "Successfully provisioned certificates for the registration request \n{}",
@@ -76,11 +76,11 @@ public class RegisterResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public RegisterResponse registerMachinery(
+    public CertificateResponse registerMachinery(
             @Valid MachineryCertificateRequest data) throws Exception {
         LOGGER.debug("Received registerRequest: {}", data);
 
-        RegisterResponse response = certificateService.provisionMachinery(data);
+        CertificateResponse response = certificateService.provisionMachinery(data);
 
         LOGGER.debug(
                 "Successfully provisioned certificates for the registration request \n{}",

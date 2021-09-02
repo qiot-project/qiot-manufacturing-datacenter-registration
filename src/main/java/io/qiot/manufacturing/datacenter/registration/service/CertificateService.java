@@ -3,9 +3,9 @@
  */
 package io.qiot.manufacturing.datacenter.registration.service;
 
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 
 /**
@@ -15,11 +15,11 @@ import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvis
  **/
 public interface CertificateService {
 
-    public RegisterResponse provisionFactory(
+    public CertificateResponse provisionFactory(
             FactoryCertificateRequest factoryRegisterRequest)
             throws CertificateProvisionException;
 
-    public RegisterResponse provisionMachinery(
+    public CertificateResponse provisionMachinery(
             MachineryCertificateRequest machineryRegisterRequest)
             throws CertificateProvisionException;
 }

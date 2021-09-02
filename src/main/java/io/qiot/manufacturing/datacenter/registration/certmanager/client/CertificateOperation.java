@@ -21,7 +21,7 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.internal.KubernetesDeserializer;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.CertificateList;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Certificate;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Constants;
@@ -72,9 +72,9 @@ public class CertificateOperation {
         return namespace;
     }
 
-    public RegisterResponse isReady(String name) {
+    public CertificateResponse isReady(String name) {
 
-        Uni<RegisterResponse> uni = Uni.createFrom().emitter(em ->  {
+        Uni<CertificateResponse> uni = Uni.createFrom().emitter(em ->  {
             CertificateWatcher watcher = new CertificateWatcher(em);
             Watch watch = this.operation().withName(name).watch(watcher);
             watcher.setWatch(watch);
@@ -84,10 +84,10 @@ public class CertificateOperation {
     }
 
     private final class CertificateWatcher implements Watcher<Certificate> {
-        private final UniEmitter<? super RegisterResponse> em;
+        private final UniEmitter<? super CertificateResponse> em;
         private Watch watch;
 
-        private CertificateWatcher(UniEmitter<? super RegisterResponse> em) {
+        private CertificateWatcher(UniEmitter<? super CertificateResponse> em) {
             this.em = em;
         }
 
@@ -111,7 +111,7 @@ public class CertificateOperation {
                         String keystore = secret.getData().get(KeystoreSpec.KEYSTORE_KEY_P12);
                         String truststore = secret.getData().get(KeystoreSpec.TRUSTSTORE_KEY_P12);
                         if(keystore != null && truststore != null) {
-                            RegisterResponse registerResponse = new RegisterResponse();
+                            CertificateResponse registerResponse = new CertificateResponse();
                             registerResponse.keystore=keystore;
                             registerResponse.truststore=truststore;
                             em.complete(registerResponse);

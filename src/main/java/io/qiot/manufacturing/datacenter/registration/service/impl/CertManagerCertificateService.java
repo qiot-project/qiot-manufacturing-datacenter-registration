@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Certificate;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.CertificateKeystoresSpec;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.CertificateSpec;
@@ -55,7 +55,7 @@ public class CertManagerCertificateService implements CertificateService {
     }
 
     @Override
-    public RegisterResponse provisionFactory(FactoryCertificateRequest data)
+    public CertificateResponse provisionFactory(FactoryCertificateRequest data)
             throws CertificateProvisionException {
         final String name = data.factoryId.toString(); // unique name
         final String commonName = data.name + "."
@@ -83,7 +83,7 @@ public class CertManagerCertificateService implements CertificateService {
 
     //TODO: adapt to new certificate domain model
     @Override
-    public RegisterResponse provisionMachinery(
+    public CertificateResponse provisionMachinery(
             MachineryCertificateRequest data)
             throws CertificateProvisionException {
         final String name = data.factoryId.toString(); // unique name
