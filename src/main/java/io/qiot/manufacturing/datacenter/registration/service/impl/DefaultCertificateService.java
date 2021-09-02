@@ -13,8 +13,8 @@ import javax.enterprise.inject.Typed;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryRegisterRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryRegisterRequest;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
@@ -35,7 +35,7 @@ public class DefaultCertificateService implements CertificateService {
     }
 
     @Override
-    public RegisterResponse provisionFactory(FactoryRegisterRequest data)
+    public RegisterResponse provisionFactory(FactoryCertificateRequest data)
             throws CertificateProvisionException {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -59,7 +59,7 @@ public class DefaultCertificateService implements CertificateService {
     }
 
     @Override
-    public RegisterResponse provisionMachinery(MachineryRegisterRequest data)
+    public RegisterResponse provisionMachinery(MachineryCertificateRequest data)
             throws CertificateProvisionException {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();

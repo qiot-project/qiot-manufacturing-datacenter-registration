@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryRegisterRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryRegisterRequest;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.RegisterResponse;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Certificate;
 import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.CertificateKeystoresSpec;
@@ -55,7 +55,7 @@ public class CertManagerCertificateService implements CertificateService {
     }
 
     @Override
-    public RegisterResponse provisionFactory(FactoryRegisterRequest data)
+    public RegisterResponse provisionFactory(FactoryCertificateRequest data)
             throws CertificateProvisionException {
         final String name = data.factoryId.toString(); // unique name
         final String commonName = data.name + "."
@@ -84,7 +84,7 @@ public class CertManagerCertificateService implements CertificateService {
     //TODO: adapt to new certificate domain model
     @Override
     public RegisterResponse provisionMachinery(
-            MachineryRegisterRequest data)
+            MachineryCertificateRequest data)
             throws CertificateProvisionException {
         final String name = data.factoryId.toString(); // unique name
         final String commonName = data.name + "."
@@ -110,8 +110,41 @@ public class CertManagerCertificateService implements CertificateService {
         return certificateOperation.isReady(name);
     }
 
+    //TODO: Factory
     private CertificateKeystoresSpec
-            createKeyStoreSecret(FactoryRegisterRequest data, String id) {
+            createKeyStoreSecret(FactoryCertificateRequest data, String id) {
+
+        final String keyStorePassword = data.keyStorePassword;
+
+        if (keyStorePassword != null && !"".equals(keyStorePassword)) {
+            String secretName = KEYSTORE_SECRET_PREFIX + id;
+
+            LOGGER.debug("Secret Keystore creation {} ", secretName);
+
+            secretOperation.operation().create(new SecretBuilder()
+                    .withNewMetadata().withName(secretName)
+                    .withLabels(Collections.singletonMap(
+                            REGISTRATION_QIOT_IO_SERIAL, data.serial))
+                    .endMetadata().withStringData(Collections.singletonMap(
+                            KEYSTORE_KEY_PASSWORD, keyStorePassword))
+                    .build());
+
+            return CertificateKeystoresSpec.builder()
+                    .pkcs12(KeystoreSpec.builder().create(true)
+                            .passwordSecretRef(PasswordSecretRefSpec.builder()
+                                    .key(KEYSTORE_KEY_PASSWORD).name(secretName)
+                                    .build())
+                            .build())
+                    .build();
+        }
+        throw new IllegalArgumentException(
+                "KeyStorePassword is undedifined for serial: "
+                        + data.serial + ", name: " + data.name);
+    }
+
+    //TODO: Machinery
+    private CertificateKeystoresSpec
+            createKeyStoreSecret(MachineryCertificateRequest data, String id) {
 
         final String keyStorePassword = data.keyStorePassword;
 
