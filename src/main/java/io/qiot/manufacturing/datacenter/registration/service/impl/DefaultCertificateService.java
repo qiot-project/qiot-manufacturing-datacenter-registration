@@ -67,9 +67,9 @@ public class DefaultCertificateService implements CertificateService {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-        try (InputStream tsIs = loader
+        try (InputStream ksIs = loader
                 .getResourceAsStream(RUNTIME_MF_CLIENT_KS.getPathString());
-                InputStream ksIs = loader.getResourceAsStream(
+                InputStream tsIs = loader.getResourceAsStream(
                         RUNTIME_MF_CLIENT_TS.getPathString())) {
             LOGGER.debug("input stream of the Client KEY store: {}", ksIs);
             LOGGER.debug("input stream of the Client TRUST store: {}", tsIs);
