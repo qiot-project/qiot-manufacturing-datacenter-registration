@@ -13,6 +13,8 @@ import javax.enterprise.inject.Typed;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
+import static io.qiot.manufacturing.datacenter.registration.service.impl.CertPathEnum.*;
+
 import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
@@ -40,10 +42,10 @@ public class DefaultCertificateService implements CertificateService {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-        try (InputStream tsIs = loader
-                .getResourceAsStream("certs/mqtts/client.ts");
-                InputStream ksIs = loader
-                        .getResourceAsStream("certs/mqtts/client.ks")) {
+        try (InputStream ksIs = loader
+                .getResourceAsStream(RUNTIME_FD_CLIENT_KS.getPathString());
+                InputStream tsIs = loader.getResourceAsStream(
+                        RUNTIME_FD_CLIENT_TS.getPathString())) {
             LOGGER.debug("input stream of the Client KEY store: {}", ksIs);
             LOGGER.debug("input stream of the Client TRUST store: {}", tsIs);
 
@@ -59,15 +61,16 @@ public class DefaultCertificateService implements CertificateService {
     }
 
     @Override
-    public CertificateResponse provisionMachinery(MachineryCertificateRequest data)
+    public CertificateResponse provisionMachinery(
+            MachineryCertificateRequest data)
             throws CertificateProvisionException {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         try (InputStream tsIs = loader
-                .getResourceAsStream("certs/mqtts/client.ts");
-                InputStream ksIs = loader
-                        .getResourceAsStream("certs/mqtts/client.ks")) {
+                .getResourceAsStream(RUNTIME_MF_CLIENT_KS.getPathString());
+                InputStream ksIs = loader.getResourceAsStream(
+                        RUNTIME_MF_CLIENT_TS.getPathString())) {
             LOGGER.debug("input stream of the Client KEY store: {}", ksIs);
             LOGGER.debug("input stream of the Client TRUST store: {}", tsIs);
 
