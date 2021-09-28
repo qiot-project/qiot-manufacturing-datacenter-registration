@@ -2,6 +2,7 @@ package io.qiot.manufacturing.datacenter.registration.certmanager.client;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -9,23 +10,25 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
-import io.fabric8.kubernetes.api.model.Condition;
+import io.fabric8.certmanager.api.model.meta.v1.ObjectReference;
+import io.fabric8.certmanager.api.model.meta.v1.SecretKeySelector;
+import io.fabric8.certmanager.api.model.v1.Certificate;
+import io.fabric8.certmanager.api.model.v1.CertificateCondition;
+import io.fabric8.certmanager.api.model.v1.CertificateKeystores;
+import io.fabric8.certmanager.api.model.v1.CertificateList;
+import io.fabric8.certmanager.api.model.v1.CertificateSpec;
+import io.fabric8.certmanager.api.model.v1.CertificateStatus;
+import io.fabric8.certmanager.api.model.v1.PKCS12Keystore;
+import io.fabric8.certmanager.client.DefaultCertManagerClient;
 import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
-import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.Watch;
 import io.fabric8.kubernetes.client.Watcher;
 import io.fabric8.kubernetes.client.WatcherException;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
-import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
-import io.fabric8.kubernetes.internal.KubernetesDeserializer;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.CertificateList;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Certificate;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Constants;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.KeystoreSpec;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.subscription.UniEmitter;
 
@@ -33,6 +36,16 @@ import io.smallrye.mutiny.subscription.UniEmitter;
  * @author mmascia
  */
 @ApplicationScoped
+@RegisterForReflection(targets = {Certificate.class, 
+    CertificateSpec.class, 
+    CertificateCondition.class, 
+    ObjectReference.class, 
+    CertificateList.class, 
+    Map.class,
+    CertificateKeystores.class,
+    PKCS12Keystore.class,
+    SecretKeySelector.class,
+    CertificateStatus.class})
 public class CertificateOperation {
 
 
@@ -48,24 +61,8 @@ public class CertificateOperation {
     @Inject
     Logger LOGGER;
 
-    public static CustomResourceDefinition certificate() {
-        return new CustomResourceDefinitionBuilder()
-                .withApiVersion(Constants.V1_API_VERSION)
-                .withKind(Constants.CRD_KIND).withNewMetadata()
-                .withName(Certificate.RESOURCE_PLURAL + "." + Constants.RESOURCE_GROUP_NAME).endMetadata().withNewSpec()
-                .withScope(Certificate.SCOPE).withGroup(Constants.RESOURCE_GROUP_NAME).withNewNames()
-                .withSingular(Certificate.RESOURCE_SINGULAR).withPlural(Certificate.RESOURCE_PLURAL)
-                .withKind(Certificate.RESOURCE_KIND).withListKind(Certificate.RESOURCE_LIST_KIND).endNames().endSpec()
-                .build();
-    }
-
     public MixedOperation<Certificate, CertificateList, Resource<Certificate>> operation() {
-
-        CustomResourceDefinition crd = certificate();
-        KubernetesDeserializer.registerCustomKind(Constants.RESOURCE_GROUP_NAME + "/" + Constants.VERSION,
-                Certificate.RESOURCE_KIND, Certificate.class);
-        return kubernetesClient.customResources(CustomResourceDefinitionContext.fromCrd(crd), Certificate.class,
-                CertificateList.class);
+        return new DefaultCertManagerClient().inNamespace(namespace).v1().certificates();
     }
 
     public String getNamespace() {
@@ -100,23 +97,25 @@ public class CertificateOperation {
             if(this.watch != null && Action.MODIFIED.equals(action)) {
                 String name = resource.getMetadata().getName();
                 LOGGER.info("Watch Certificate {}: {}", action, name);
-                List<Condition> conditions = resource.getStatus().getConditions();
+                List<CertificateCondition> conditions = resource.getStatus().getConditions();
                 if (conditions.size() > 0) {
-                    Condition condition = conditions.get(0);
+                    CertificateCondition condition = conditions.get(0);
                     if ("True".equals(condition.getStatus())) {
                         Secret secret = kubernetesClient.secrets()
                             .inNamespace(namespace)
                             .withName(resource.getSpec().getSecretName())
                             .get();
-                        String keystore = secret.getData().get(KeystoreSpec.KEYSTORE_KEY_P12);
-                        String truststore = secret.getData().get(KeystoreSpec.TRUSTSTORE_KEY_P12);
-                        if(keystore != null && truststore != null) {
-                            CertificateResponse registerResponse = new CertificateResponse();
-                            registerResponse.keystore=keystore;
-                            registerResponse.truststore=truststore;
-                            em.complete(registerResponse);
-                            LOGGER.debug("Certificate {} is ready: {}", name, resource);
-                            watch.close();
+                        if(secret != null) {
+                            String keystore = secret.getData().get("keystore.p12");
+                            String truststore = secret.getData().get("truststore.p12");
+                            if(keystore != null && truststore != null) {
+                                CertificateResponse registerResponse = new CertificateResponse();
+                                registerResponse.keystore=keystore;
+                                registerResponse.truststore=truststore;
+                                em.complete(registerResponse);
+                                LOGGER.debug("Certificate {} is ready: {}", name, resource);
+                                watch.close();
+                            }
                         }
                     }
                 }
