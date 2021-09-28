@@ -9,19 +9,16 @@ import javax.enterprise.inject.Typed;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
-import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
+import io.fabric8.certmanager.api.model.v1.Certificate;
+import io.fabric8.certmanager.api.model.v1.CertificateBuilder;
+import io.fabric8.certmanager.api.model.v1.CertificateKeystores;
+import io.fabric8.certmanager.api.model.v1.CertificateKeystoresBuilder;
+import io.fabric8.certmanager.api.model.v1.CertificateSpecBuilder;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.FactoryCertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.MachineryCertificateRequest;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.Certificate;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.CertificateKeystoresSpec;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.CertificateSpec;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.KeystoreSpec;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.ObjectReferenceSpec;
-import io.qiot.manufacturing.datacenter.registration.certmanager.api.model.PasswordSecretRefSpec;
 import io.qiot.manufacturing.datacenter.registration.certmanager.client.CertificateOperation;
 import io.qiot.manufacturing.datacenter.registration.certmanager.client.SecretOperation;
+import io.qiot.manufacturing.datacenter.registration.domain.CertificateRequest;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
 
@@ -36,6 +33,7 @@ public class CertManagerCertificateService implements CertificateService {
     public static final String KEYSTORE_SECRET_PREFIX = "keystore-secret-";
     public static final String KEYSTORE_KEY_PASSWORD = "password";
     public static final String REGISTRATION_QIOT_IO_SERIAL = "registration.qiot.io/serial";
+    public static final String REGISTRATION_QIOT_IO_NAME = "registration.qiot.io/name";
     final CertificateOperation certificateOperation;
     final SecretOperation secretOperation;
     final String issuer;
@@ -55,23 +53,28 @@ public class CertManagerCertificateService implements CertificateService {
     }
 
     @Override
-    public CertificateResponse provisionFactory(FactoryCertificateRequest data)
+    public CertificateResponse provision(CertificateRequest data)
             throws CertificateProvisionException {
-        final String name = data.factoryId.toString(); // unique name
-        final String commonName = data.name + "."
+        final String name = data.id.toString(); // unique name
+        final String commonName = data.name 
+                + data.domain
+                + "."
                 + certificateOperation.getNamespace() + domain;
 
-        final Certificate certificate = Certificate.builder()
-                .metadata(new ObjectMetaBuilder().withName(name)
-                        .withLabels(Collections.singletonMap(
-                                REGISTRATION_QIOT_IO_SERIAL, data.serial))
+        CertificateKeystores keystores = createKeyStoreSecret(data, name);
+        final Certificate certificate = new CertificateBuilder()
+                .withNewMetadata()
+                        .withName(name)
+                        .withAnnotations(Collections.singletonMap(REGISTRATION_QIOT_IO_SERIAL, data.serial))
+                        .withLabels(Collections.singletonMap(REGISTRATION_QIOT_IO_NAME, data.name))
+                .endMetadata()
+                .withSpec(new CertificateSpecBuilder()
+                        .withSecretName(name)
+                        .withCommonName(commonName)
+                        .withDnsNames(Arrays.asList(new String[] { commonName }))
+                        .withNewIssuerRef().withName(issuer).endIssuerRef()
+                        .withKeystores(keystores)
                         .build())
-                .spec(CertificateSpec.builder().secretName(name)
-                        .commonName(commonName)
-                        .dnsNames(Arrays.asList(new String[] { commonName }))
-                        .issuerRef(ObjectReferenceSpec.builder().name(issuer)
-                                .build())
-                        .keystores(createKeyStoreSecret(data, name)).build())
                 .build();
 
         certificateOperation.operation().create(certificate);
@@ -81,41 +84,11 @@ public class CertManagerCertificateService implements CertificateService {
         return certificateOperation.isReady(name);
     }
 
-    //TODO: adapt to new certificate domain model
-    @Override
-    public CertificateResponse provisionMachinery(
-            MachineryCertificateRequest data)
-            throws CertificateProvisionException {
-        final String name = data.factoryId.toString(); // unique name
-        final String commonName = data.name + "."
-                + certificateOperation.getNamespace() + domain;
 
-        final Certificate certificate = Certificate.builder()
-                .metadata(new ObjectMetaBuilder().withName(name)
-                        .withLabels(Collections.singletonMap(
-                                REGISTRATION_QIOT_IO_SERIAL, data.serial))
-                        .build())
-                .spec(CertificateSpec.builder().secretName(name)
-                        .commonName(commonName)
-                        .dnsNames(Arrays.asList(new String[] { commonName }))
-                        .issuerRef(ObjectReferenceSpec.builder().name(issuer)
-                                .build())
-                        .keystores(createKeyStoreSecret(data, name)).build())
-                .build();
-
-        certificateOperation.operation().create(certificate);
-
-        LOGGER.debug("Certificate creation {} ", certificate);
-
-        return certificateOperation.isReady(name);
-    }
-
-    //TODO: Factory
-    private CertificateKeystoresSpec
-            createKeyStoreSecret(FactoryCertificateRequest data, String id) {
+    private CertificateKeystores
+            createKeyStoreSecret(CertificateRequest data, String id) {
 
         final String keyStorePassword = data.keyStorePassword;
-
         if (keyStorePassword != null && !"".equals(keyStorePassword)) {
             String secretName = KEYSTORE_SECRET_PREFIX + id;
 
@@ -123,55 +96,21 @@ public class CertManagerCertificateService implements CertificateService {
 
             secretOperation.operation().create(new SecretBuilder()
                     .withNewMetadata().withName(secretName)
-                    .withLabels(Collections.singletonMap(
+                    .withAnnotations(Collections.singletonMap(
                             REGISTRATION_QIOT_IO_SERIAL, data.serial))
+                    .withLabels(Collections.singletonMap(REGISTRATION_QIOT_IO_NAME, data.name))
                     .endMetadata().withStringData(Collections.singletonMap(
                             KEYSTORE_KEY_PASSWORD, keyStorePassword))
                     .build());
 
-            return CertificateKeystoresSpec.builder()
-                    .pkcs12(KeystoreSpec.builder().create(true)
-                            .passwordSecretRef(PasswordSecretRefSpec.builder()
-                                    .key(KEYSTORE_KEY_PASSWORD).name(secretName)
-                                    .build())
-                            .build())
-                    .build();
+            return new CertificateKeystoresBuilder().withNewPkcs12()
+                        .withCreate(true)
+                        .withNewPasswordSecretRef(KEYSTORE_KEY_PASSWORD, secretName)
+                        .endPkcs12()
+                        .build();
         }
         throw new IllegalArgumentException(
                 "KeyStorePassword is undedifined for serial: "
                         + data.serial + ", name: " + data.name);
     }
-
-    //TODO: Machinery
-    private CertificateKeystoresSpec
-            createKeyStoreSecret(MachineryCertificateRequest data, String id) {
-
-        final String keyStorePassword = data.keyStorePassword;
-
-        if (keyStorePassword != null && !"".equals(keyStorePassword)) {
-            String secretName = KEYSTORE_SECRET_PREFIX + id;
-
-            LOGGER.debug("Secret Keystore creation {} ", secretName);
-
-            secretOperation.operation().create(new SecretBuilder()
-                    .withNewMetadata().withName(secretName)
-                    .withLabels(Collections.singletonMap(
-                            REGISTRATION_QIOT_IO_SERIAL, data.serial))
-                    .endMetadata().withStringData(Collections.singletonMap(
-                            KEYSTORE_KEY_PASSWORD, keyStorePassword))
-                    .build());
-
-            return CertificateKeystoresSpec.builder()
-                    .pkcs12(KeystoreSpec.builder().create(true)
-                            .passwordSecretRef(PasswordSecretRefSpec.builder()
-                                    .key(KEYSTORE_KEY_PASSWORD).name(secretName)
-                                    .build())
-                            .build())
-                    .build();
-        }
-        throw new IllegalArgumentException(
-                "KeyStorePassword is undedifined for serial: "
-                        + data.serial + ", name: " + data.name);
-    }
-
 }

@@ -27,3 +27,8 @@ hs_err_pid*
 /.classpath
 /.project
 /.settings/
+**/.history/
+.factorypath
+settings.json
+.DS_Store
+.vscode/
