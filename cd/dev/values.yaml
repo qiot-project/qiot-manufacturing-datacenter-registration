@@ -1,59 +1,55 @@
-image:
-  ## Name of the image you want to build/deploy
-  ## Defaults to the release name
-  name: quay.io/qiotmanufacturing/datacenter-registration
-  ## Tag that you want to build/deploy
-  tag: latest 
+quarkus:
+  build:
+    enabled: false
+  image:
+    name: quay.io/qiotmanufacturing/datacenter-registration
+    tag: latest
+  deploy:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
 
-build:
-  enabled: false
+    serviceType: ClusterIP
 
-deploy:
-  replicas: 1
-  resources:
-    limits:
-      cpu: 100m
-      memory: 256Mi
-    requests:
-      cpu: 50m
-      memory: 128Mi
-
-  serviceType: ClusterIP
-
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-      protocol: TCP
-  route:
-    enabled: true
-    targetPort: http
-    tls:
+    ports:
+      - name: http
+        port: 8080
+        targetPort: 8080
+        protocol: TCP
+    route:
       enabled: true
-      termination: edge
-      insecureEdgeTerminationPolicy: Redirect
-      ## IMPORTANT: Do not check 'key' into git!
-      key:
-      caCertificate:
-      certificate:
-      destinationCACertificate:
-  livenessProbe:
-    tcpSocket:
-      port: http
-  readinessProbe:
-    httpGet:
-      path: /q/health/ready
-      port: http
+      targetPort: http
+      tls:
+        enabled: true
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        ## IMPORTANT: Do not check 'key' into git!
+        key:
+        caCertificate:
+        certificate:
+        destinationCACertificate:
+    livenessProbe:
+      tcpSocket:
+        port: http
+    readinessProbe:
+      httpGet:
+        path: /q/health/ready
+        port: http
 
-  applicationProperties:
-    enabled: true
-    #jvm
-    #mountPath:  /deployments/config
-    #s2i
-    #mountPath:  /home/quarkus/config
-    #JKube
-    mountPath:  /config
-    properties: |-
-      ## Properties go here
-      quarkus.kubernetes-client.namespace=manufacturing-dev
-      qiot.cert-manager.enabled=true
+    applicationProperties:
+      enabled: true
+      #jvm
+      #mountPath:  /deployments/config
+      #s2i
+      #mountPath:  /home/quarkus/config
+      #JKube
+      mountPath:  /config
+      properties: |-
+        ## Properties go here
+        quarkus.kubernetes-client.namespace=manufacturing-dev
+        qiot.cert-manager.enabled=true
