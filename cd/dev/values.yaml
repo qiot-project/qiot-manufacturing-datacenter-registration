@@ -3,7 +3,7 @@ quarkus:
     enabled: false
   image:
     name: quay.io/qiotmanufacturing/datacenter-registration
-    tag: sha256:7c938943ebe9260c431a1c3e3b37a721c38843c2721d8192868f88b51e92b433
+    tag: 1.0.0.beta1-SNAPSHOT
   deploy:
     replicas: 1
     resources:
