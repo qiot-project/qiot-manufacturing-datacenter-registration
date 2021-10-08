@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: registration-app
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/qiot-project/qiot-manufacturing-datacenter-registration'
+    path: cd/dev
+    targetRevision: gitops_helm
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: manufacturing-dev   
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
