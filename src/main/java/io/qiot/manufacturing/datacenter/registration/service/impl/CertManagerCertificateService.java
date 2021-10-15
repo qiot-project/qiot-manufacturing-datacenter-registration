@@ -15,10 +15,10 @@ import io.fabric8.certmanager.api.model.v1.CertificateKeystores;
 import io.fabric8.certmanager.api.model.v1.CertificateKeystoresBuilder;
 import io.fabric8.certmanager.api.model.v1.CertificateSpecBuilder;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateRequest;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.certmanager.client.CertificateOperation;
 import io.qiot.manufacturing.datacenter.registration.certmanager.client.SecretOperation;
-import io.qiot.manufacturing.datacenter.registration.domain.CertificateRequest;
-import io.qiot.manufacturing.datacenter.registration.domain.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
 

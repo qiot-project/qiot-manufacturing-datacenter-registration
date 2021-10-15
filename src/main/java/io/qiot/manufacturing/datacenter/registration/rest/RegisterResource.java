@@ -13,8 +13,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 
-import io.qiot.manufacturing.datacenter.registration.domain.CertificateRequest;
-import io.qiot.manufacturing.datacenter.registration.domain.CertificateResponse;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateRequest;
+import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
 import io.qiot.manufacturing.datacenter.registration.service.NameService;
 
@@ -46,7 +46,7 @@ public class RegisterResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public CertificateResponse registerMachinery(
+    public CertificateResponse provisionCertificate(
             @Valid CertificateRequest request) throws Exception {
         LOGGER.debug("Received cartificate request: {}", request);
 

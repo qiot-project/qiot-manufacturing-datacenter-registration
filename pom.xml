@@ -50,25 +50,25 @@
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
         <!-- COMMONS -->
-<!--         <dependency> -->
-<!--             <groupId>io.qiot.manufacturing.all</groupId> -->
-<!--             <artifactId>domain-model</artifactId> -->
-<!--             <version>${project.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>io.qiot.manufacturing.datacenter</groupId> -->
-<!--             <artifactId>domain-model</artifactId> -->
-<!--             <version>${project.version}</version> -->
-<!--         </dependency> -->
+        <dependency>
+            <groupId>io.qiot.manufacturing.all</groupId>
+            <artifactId>domain-model</artifactId>
+            <version>1.0.0.beta1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.qiot.manufacturing.datacenter</groupId>
+            <artifactId>domain-model</artifactId>
+            <version>1.0.0.beta1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>io.qiot.manufacturing.all</groupId>
             <artifactId>utilities</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0.beta1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.qiot.manufacturing.datacenter</groupId>
             <artifactId>utilities</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0.beta1-SNAPSHOT</version>
         </dependency>
         <!-- REST -->
         <dependency>
@@ -167,6 +167,28 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+<!--             <plugin> -->
+<!--                 <groupId>io.openapitools.swagger</groupId> -->
+<!--                 <artifactId>swagger-maven-plugin</artifactId> -->
+<!--                 <version>2.1.6</version> -->
+<!--                 <configuration> -->
+<!--                     <resourcePackages> -->
+<!--                         <resourcePackage>io.qiot.manufacturing.datacenter.registration.rest</resourcePackage> -->
+<!--                     </resourcePackages> -->
+<!--                     <outputDirectory>${basedir}/target/</outputDirectory> -->
+<!--                     <outputFilename>swagger</outputFilename> -->
+<!--                     <outputFormats>JSON</outputFormats> -->
+<!--                     <prettyPrint>true</prettyPrint> -->
+<!--                 </configuration> -->
+<!--                 <executions> -->
+<!--                     <execution> -->
+<!--                         <phase>compile</phase> -->
+<!--                         <goals> -->
+<!--                             <goal>generate</goal> -->
+<!--                         </goals> -->
+<!--                     </execution> -->
+<!--                 </executions> -->
+<!--             </plugin> -->
         </plugins>
     </build>
     <profiles>
