@@ -3,9 +3,9 @@
  */
 package io.qiot.manufacturing.datacenter.registration.service;
 
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
+import io.qiot.ubi.all.registration.domain.CertificateRequest;
+import io.qiot.ubi.all.registration.domain.CertificateResponse;
 
 /**
  * @author mmascia

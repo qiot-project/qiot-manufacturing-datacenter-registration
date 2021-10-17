@@ -13,10 +13,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
 import io.qiot.manufacturing.datacenter.registration.service.NameService;
+import io.qiot.ubi.all.registration.domain.CertificateRequest;
+import io.qiot.ubi.all.registration.domain.CertificateResponse;
+
 
 @Path("/register")
 @ApplicationScoped
@@ -49,6 +50,14 @@ public class RegisterResource {
     public CertificateResponse provisionCertificate(
             @Valid CertificateRequest request) throws Exception {
         LOGGER.debug("Received cartificate request: {}", request);
+
+        /*
+         * fix domain value if the client is requesting a delegate certificate
+         * authority
+         */
+        if (request.ca && !request.domain.startsWith(".")) {
+            request.domain = "." + request.domain;
+        }
 
         CertificateResponse response = certificateService.provision(request);
 

@@ -51,14 +51,9 @@
         </dependency>
         <!-- COMMONS -->
         <dependency>
-            <groupId>io.qiot.manufacturing.all</groupId>
-            <artifactId>domain-model</artifactId>
-            <version>1.0.0.beta1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.qiot.manufacturing.datacenter</groupId>
-            <artifactId>domain-model</artifactId>
-            <version>1.0.0.beta1-SNAPSHOT</version>
+            <groupId>io.qiot.ubi.all</groupId>
+            <artifactId>registration-commons</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.qiot.manufacturing.all</groupId>

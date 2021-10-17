@@ -15,12 +15,12 @@ import io.fabric8.certmanager.api.model.v1.CertificateKeystores;
 import io.fabric8.certmanager.api.model.v1.CertificateKeystoresBuilder;
 import io.fabric8.certmanager.api.model.v1.CertificateSpecBuilder;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.certmanager.client.CertificateOperation;
 import io.qiot.manufacturing.datacenter.registration.certmanager.client.SecretOperation;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
+import io.qiot.ubi.all.registration.domain.CertificateRequest;
+import io.qiot.ubi.all.registration.domain.CertificateResponse;
 
 /**
  * @author mmascia
@@ -33,7 +33,7 @@ public class CertManagerCertificateService implements CertificateService {
     public static final String KEYSTORE_SECRET_PREFIX = "keystore-secret-";
     public static final String KEYSTORE_KEY_PASSWORD = "password";
     public static final String REGISTRATION_QIOT_IO_SERIAL = "registration.qiot.io/serial";
-    public static final String REGISTRATION_QIOT_IO_NAME = "registration.qiot.io/name";
+    public static final String REGISTRATION_QIOT_IO_NAME = "registration.qiot.io/name"; 
     final CertificateOperation certificateOperation;
     final SecretOperation secretOperation;
     final String issuer;

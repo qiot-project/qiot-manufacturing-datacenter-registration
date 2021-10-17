@@ -16,10 +16,10 @@ import javax.enterprise.inject.Typed;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateRequest;
-import io.qiot.manufacturing.datacenter.commons.domain.registration.CertificateResponse;
 import io.qiot.manufacturing.datacenter.registration.exception.CertificateProvisionException;
 import io.qiot.manufacturing.datacenter.registration.service.CertificateService;
+import io.qiot.ubi.all.registration.domain.CertificateRequest;
+import io.qiot.ubi.all.registration.domain.CertificateResponse;
 
 /**
  * @author andreabattaglia
