@@ -1,1 +1,0 @@
-package io.qiot.manufacturing.datacenter.registration.rest;

@@ -4,18 +4,18 @@
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.qiot.manufacturing.datacenter</groupId>
+    <groupId>io.qiot.ubi.all</groupId>
     <artifactId>registration-service</artifactId>
-    <version>1.0.0.beta1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <parent>
-        <groupId>io.qiot.manufacturing</groupId>
+        <groupId>io.qiot.ubi</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.0.beta1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <scm>
-        <connection>scm:git:https://github.com/qiot-project/qiot-manufacturing-datacenter-registration.git</connection>
-        <developerConnection>scm:git:https://github.com/qiot-project/qiot-manufacturing-datacenter-registration.git/</developerConnection>
-        <url>https://github.com/qiot-project/qiot-manufacturing-datacenter-registration</url>
+        <connection>scm:git:https://github.com/qiot-project/qiot-ubi-all-registration.git</connection>
+        <developerConnection>scm:git:https://github.com/qiot-project/qiot-ubi-all-registration.git/</developerConnection>
+        <url>https://github.com/qiot-project/qiot-ubi-all-registration</url>
         <tag>HEAD</tag>
     </scm>
     <repositories>
@@ -192,7 +192,7 @@
             <properties>
                 <jkube.environment>prod</jkube.environment>
                 <jkube.build.strategy>jib</jkube.build.strategy>
-                <jkube.generator.name>quay.io/qiotmanufacturing/datacenter-registration:${project.version}</jkube.generator.name>
+                <jkube.generator.name>quay.io/qiotproject/all-registration:${project.version}</jkube.generator.name>
             </properties>
         </profile>
         <profile>
