@@ -69,7 +69,7 @@ jobs:
       - name: Checkout GitOps Project
         uses: actions/checkout@main
         with: 
-          repository: qiot-project/all-registration-gitops
+          repository: qiot-project/qiot-ubi-all-registration-gitops
           token: ${{ secrets.GITHUB_TOKEN }}
           path: ./all-registration-gitops
       - name: Replace image digest
@@ -85,7 +85,7 @@ jobs:
           git config user.email github-actions@github.com
           git commit -am "Updated image digest"
           git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
-          git push --force --quiet "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_PASSWD }}@github.com/qiot-project/all-registration-gitops.git" main:main
+          git push --force --quiet "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_PASSWD }}@github.com/qiot-project/qiot-ubi-all-registration-gitops.git" main:main
 
 
     # TODO: Update gitops repo
