@@ -1,19 +1,17 @@
-name: Feature
+name: CI
 
 on:
   workflow_dispatch:
   
   push:
-    branches:
-      - feature/*
-  pull_request:
-    branches:
-      - feature/*
-
+    tags:
+      - '*'
+  
 jobs:
   build:
-    name: Build
+    name: Build and Push image
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[maven-release-plugin]')"
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
@@ -48,9 +46,11 @@ jobs:
         env:
            ARTIFACTORY_USERNAME_REF: ${{ secrets.ARTIFACTORY_USERNAME }}
            ARTIFACTORY_TOKEN_REF: ${{ secrets.ARTIFACTORY_TOKEN }}
-        run: mvn -B -Pprod deploy
-      # - name: Push Image
-      #   run: |
-      #     mvn -B -Pprod,native oc:build oc:push                          \
-      #     -Djkube.docker.push.username=${{ secrets.QUAY_USERNAME }}      \
-      #     -Djkube.docker.push.password=${{ secrets.QUAY_PASSWORD }}
+        run: mvn -B -Pprod,native deploy
+      - name: Push Image
+        run: |
+          mvn -B -Pprod,native oc:build oc:push                          \
+          -Djkube.docker.push.username=${{ secrets.QUAY_USERNAME }}      \
+          -Djkube.docker.push.password=${{ secrets.QUAY_PASSWORD }}
+
+      # TODO: Update gitops repo
