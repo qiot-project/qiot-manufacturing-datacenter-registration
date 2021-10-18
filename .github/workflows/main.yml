@@ -86,6 +86,5 @@ jobs:
           git commit -am "Updated image digest"
           git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
           git push --force --quiet "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_PASSWD }}@github.com/qiot-project/all-registration-gitops.git" main:main
-    # git push
 
     # TODO: Update gitops repo
