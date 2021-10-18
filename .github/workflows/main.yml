@@ -55,5 +55,14 @@ jobs:
           mvn -B -Pprod,native oc:build oc:push                          \
           -Djkube.docker.push.username=${{ secrets.QUAY_USERNAME }}      \
           -Djkube.docker.push.password=${{ secrets.QUAY_PASSWORD }}
+      - name: Get the SHA of the container
+        run: |
+            echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+            echo "IMAGE_NAME=pull quay.io/qiotproject/all-registration" >> $GITHUB_ENV
+
+            docker pull ${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            echo "IMAGE_SHA=$(docker inspect --format='{{.RepoDigests}}'  ${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}|sed 's:^.\(.*\).$:\1:'|tr " " "\n")" >> $GITHUB_ENV
+
+            echo "${{ env.IMAGE_SHA }}"
 
       # TODO: Update gitops repo
