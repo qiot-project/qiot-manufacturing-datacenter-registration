@@ -14,6 +14,7 @@ jobs:
   build:
     name: Build and Push image
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[maven-release-plugin]')"
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
