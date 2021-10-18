@@ -72,7 +72,7 @@ jobs:
           repository: qiot-project/all-registration-gitops
           token: ${{ secrets.GITHUB_TOKEN }}
           path: ./all-registration-gitops
-      - name: Replace image name with SHA
+      - name: Replace image digest
         run: |
           value=${{ env.IMAGE_SHA }}
           sed -i '/^\([[:space:]]*digest: \).*/s//\1'${value#*@}'/' ./all-registration-gitops/dev/values.yaml
@@ -83,7 +83,9 @@ jobs:
           git add .
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git commit -am "File Replicated from Project A"
-          git push
+          git commit -am "Updated image digest"
+          git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
+          git push --force --quiet "https://${{ secrets.GIT_USER }}:${{ secrets.GIT_PASSWD }}@$qiot-project/all-registration-gitops.git" main:main
+    # git push
 
     # TODO: Update gitops repo
