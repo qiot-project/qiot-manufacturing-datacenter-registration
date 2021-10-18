@@ -58,10 +58,12 @@ jobs:
       - name: Get the SHA of the container
         run: |
             echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-            echo "IMAGE_NAME=pull quay.io/qiotproject/all-registration" >> $GITHUB_ENV
+            echo ${{ env.RELEASE_VERSION }}
+            echo "IMAGE_NAME=quay.io/qiotproject/all-registration" >> $GITHUB_ENV
+            echo ${{ env.IMAGE_NAME }}
 
-            docker pull ${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-            echo "IMAGE_SHA=$(docker inspect --format='{{.RepoDigests}}'  ${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}|sed 's:^.\(.*\).$:\1:'|tr " " "\n")" >> $GITHUB_ENV
+            docker pull "${{ env.IMAGE_NAME }}":"${{ env.RELEASE_VERSION }}"
+            echo "IMAGE_SHA=$(docker inspect --format='{{.RepoDigests}}' ${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}|sed 's:^.\(.*\).$:\1:'|tr " " "\n")" >> $GITHUB_ENV
 
             echo "${{ env.IMAGE_SHA }}"
 
