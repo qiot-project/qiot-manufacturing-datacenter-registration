@@ -66,5 +66,23 @@ jobs:
       - name: Print SHA
         run: |
             echo "${{ env.IMAGE_SHA }}"
+      - name: Checkout Project B
+        uses: actions/checkout@main
+        with: 
+          repository: qiot-project/all-registration-gitops
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./all-registration-gitops
+      - name: Replace image name with SHA
+        run: |
+          sed -i "" "/^\([[:space:]]*image: \).*/s//\1${{ env.IMAGE_SHA }}/" ./all-registration-gitops/dev/values.yaml
 
-      # TODO: Update gitops repo
+      - name: Push to GitOps repo
+        run: |
+          cd ./all-registration-gitops
+          git add .
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -am "File Replicated from Project A"
+          git push
+
+    # TODO: Update gitops repo
