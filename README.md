@@ -1,6 +1,8 @@
 # qiot-manufacturing-datacenter-registration
 
 ![Build](https://github.com/qiot-project/qiot-ubi-all-registration/actions/workflows/ci.yml/badge.svg)
+![PR](https://github.com/qiot-project/qiot-ubi-all-registration/actions/workflows/feature.yml/badge.svg?event=pull_request)
+
 
 
 ## Build & Push
