@@ -74,7 +74,8 @@ jobs:
           path: ./all-registration-gitops
       - name: Replace image name with SHA
         run: |
-          sed -i "/^\([[:space:]]*image: \).*/s//\1${{ env.IMAGE_SHA }}/" ./all-registration-gitops/dev/values.yaml
+          value=${{ env.IMAGE_SHA }}
+          sed  '/^\([[:space:]]*digest: \).*/s//\1'${value#*@}'/' ./all-registration-gitops/dev/values.yaml
 
       - name: Push to GitOps repo
         run: |
