@@ -66,7 +66,7 @@ jobs:
       - name: Print SHA
         run: |
             echo "${{ env.IMAGE_SHA }}"
-      - name: Checkout Project B
+      - name: Checkout GitOps Project
         uses: actions/checkout@main
         with: 
           repository: qiot-project/all-registration-gitops
@@ -75,7 +75,7 @@ jobs:
       - name: Replace image name with SHA
         run: |
           value=${{ env.IMAGE_SHA }}
-          sed  '/^\([[:space:]]*digest: \).*/s//\1'${value#*@}'/' ./all-registration-gitops/dev/values.yaml
+          sed -i '/^\([[:space:]]*digest: \).*/s//\1'${value#*@}'/' ./all-registration-gitops/dev/values.yaml
 
       - name: Push to GitOps repo
         run: |
