@@ -42,7 +42,7 @@ public class IssuerResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response provisionIssuer( @Valid CAIssuerRequest issuerRequest) throws Exception {
+    public Response provisionIssuer( @Valid CAIssuerRequest issuerRequest) {
 
         LOGGER.debug("Received request: {}", issuerRequest);
         try {
