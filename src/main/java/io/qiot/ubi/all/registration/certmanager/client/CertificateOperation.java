@@ -108,10 +108,16 @@ public class CertificateOperation {
                         if(secret != null) {
                             String keystore = secret.getData().get("keystore.p12");
                             String truststore = secret.getData().get("truststore.p12");
+                            String tlsCert = secret.getData().get("tls.crt");
+                            String tlsKey = secret.getData().get("tls.key");
+
                             if(keystore != null && truststore != null) {
                                 CertificateResponse registerResponse = new CertificateResponse();
                                 registerResponse.keystore=keystore;
                                 registerResponse.truststore=truststore;
+                                registerResponse.tlsCert=tlsCert;
+                                registerResponse.tlsKey=tlsKey;
+                                
                                 em.complete(registerResponse);
                                 LOGGER.debug("Certificate {} is ready: {}", name, resource);
                                 watch.close();
