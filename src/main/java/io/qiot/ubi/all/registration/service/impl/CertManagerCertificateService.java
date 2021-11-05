@@ -74,6 +74,7 @@ public class CertManagerCertificateService implements CertificateService {
                         .withDnsNames(Arrays.asList(new String[] { commonName }))
                         .withNewIssuerRef().withName(issuer).endIssuerRef()
                         .withKeystores(keystores)
+                        .withIsCA(data.ca)
                         .build())
                 .build();
 

@@ -52,11 +52,10 @@ public class RegisterResource {
         LOGGER.debug("Received cartificate request: {}", request);
 
         /*
-         * fix domain value if the client is requesting a delegate certificate
-         * authority
+         * In case of intermediate ca, ignore the domain.
          */
-        if (request.ca && !request.domain.startsWith(".")) {
-            request.domain = "." + request.domain;
+        if (request.ca) {
+            request.domain = "";
         }
 
         CertificateResponse response = certificateService.provision(request);
