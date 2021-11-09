@@ -46,7 +46,7 @@ public class IntermediateIssuer {
     String domain;
     @ConfigProperty(name = "qiot.cert-manager.baseDomain")
     String baseDomain;
-    @ConfigProperty(name = "quarkus.qiot.vault.ttl")
+    @ConfigProperty(name = "qiot.vault.ttl")
     String timeTolive;
 
     @Inject
@@ -61,8 +61,7 @@ public class IntermediateIssuer {
     Logger LOGGER;
 
     public CertificateResponse enable(CertificateRequest certificateRequest)
-            throws KeyStoreException, NoSuchAlgorithmException,
-            CertificateException, IOException {
+            throws Exception {
         final String mountRootName = namespace + "-pki";
         final String mountIntemediateName = namespace + "-pki-"
                 + certificateRequest.name;
@@ -115,24 +114,8 @@ public class IntermediateIssuer {
                 .encodeToString(tlsCert.getBytes());
         response.tlsKey = Base64.getEncoder().encodeToString(tlsKey.getBytes());
 
-        // TODO: to p12
-        KeyStore keystore = pemUtils.toPKCS12(tlsCert, ca,
-                certificateRequest.keyStorePassword);
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-            keystore.store(baos,
-                    certificateRequest.keyStorePassword.toCharArray());
-            response.keystore = Base64.getEncoder()
-                    .encodeToString(baos.toByteArray());
-        }
-
-        KeyStore truststore = pemUtils.toPKCS12(ca, "",
-                certificateRequest.keyStorePassword);
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-            truststore.store(baos,
-                    certificateRequest.keyStorePassword.toCharArray());
-            response.truststore = Base64.getEncoder()
-                    .encodeToString(baos.toByteArray());
-        }
+        response.keystore = Base64.getEncoder().encodeToString(pemUtils.toPKCS12(tlsKey, tlsCert, certificateRequest.keyStorePassword));
+        response.truststore = Base64.getEncoder().encodeToString(pemUtils.toPKCS12(ca, certificateRequest.keyStorePassword));
 
         return response;
     }
