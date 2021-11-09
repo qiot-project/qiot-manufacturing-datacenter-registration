@@ -12,13 +12,13 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.bouncycastle.jce.provider.PEMUtil;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import io.qiot.ubi.all.registration.domain.CertificateRequest;
 import io.qiot.ubi.all.registration.domain.CertificateResponse;
 import io.qiot.ubi.all.registration.util.PEMUtils;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.vault.VaultPKISecretEngine;
 import io.quarkus.vault.VaultPKISecretEngineFactory;
 import io.quarkus.vault.VaultSystemBackendEngine;
@@ -31,6 +31,7 @@ import io.quarkus.vault.pki.PrivateKeyData;
 import io.quarkus.vault.pki.SignIntermediateCAOptions;
 import io.quarkus.vault.pki.SignedCertificate;
 import io.quarkus.vault.pki.CSRData.PEM;
+import io.quarkus.vault.runtime.client.dto.sys.VaultEnableEngineBody;
 import io.quarkus.vault.sys.EnableEngineOptions;
 import io.quarkus.vault.sys.VaultSecretEngine;
 
@@ -38,6 +39,7 @@ import io.quarkus.vault.sys.VaultSecretEngine;
  * @author mmascia
  */
 @ApplicationScoped
+@RegisterForReflection(targets = {VaultEnableEngineBody.class, VaultEnableEngineBody.Config.class})
 public class IntermediateIssuer {
 
     @ConfigProperty(name = "quarkus.kubernetes-client.namespace")
