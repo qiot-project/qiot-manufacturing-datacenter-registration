@@ -16,11 +16,17 @@ import javax.inject.Singleton;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.slf4j.Logger;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 @Singleton
+@RegisterForReflection(targets = { BouncyCastleProvider.class,
+        PrivateKeyInfo.class, X509CertificateHolder.class,
+        JcaX509CertificateConverter.class, PEMKeyPair.class, PEMParser.class })
 public class PEMUtils {
 
     @Inject
