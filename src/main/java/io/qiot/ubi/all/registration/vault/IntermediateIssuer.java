@@ -1,11 +1,5 @@
 package io.qiot.ubi.all.registration.vault;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.List;
 
@@ -17,12 +11,12 @@ import org.slf4j.Logger;
 
 import io.qiot.ubi.all.registration.domain.CertificateRequest;
 import io.qiot.ubi.all.registration.domain.CertificateResponse;
-import io.qiot.ubi.all.registration.util.PEMUtils;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.vault.VaultPKISecretEngine;
 import io.quarkus.vault.VaultPKISecretEngineFactory;
 import io.quarkus.vault.VaultSystemBackendEngine;
 import io.quarkus.vault.pki.CSRData;
+import io.quarkus.vault.pki.CSRData.PEM;
 import io.quarkus.vault.pki.CertificateData;
 import io.quarkus.vault.pki.DataFormat;
 import io.quarkus.vault.pki.GenerateIntermediateCSROptions;
@@ -30,7 +24,6 @@ import io.quarkus.vault.pki.GeneratedIntermediateCSRResult;
 import io.quarkus.vault.pki.PrivateKeyData;
 import io.quarkus.vault.pki.SignIntermediateCAOptions;
 import io.quarkus.vault.pki.SignedCertificate;
-import io.quarkus.vault.pki.CSRData.PEM;
 import io.quarkus.vault.runtime.client.dto.sys.VaultEnableEngineBody;
 import io.quarkus.vault.sys.EnableEngineOptions;
 import io.quarkus.vault.sys.VaultSecretEngine;
@@ -39,7 +32,8 @@ import io.quarkus.vault.sys.VaultSecretEngine;
  * @author mmascia
  */
 @ApplicationScoped
-@RegisterForReflection(targets = {VaultEnableEngineBody.class, VaultEnableEngineBody.Config.class})
+@RegisterForReflection(targets = { VaultEnableEngineBody.class,
+        VaultEnableEngineBody.Config.class })
 public class IntermediateIssuer {
 
     @ConfigProperty(name = "quarkus.kubernetes-client.namespace")
@@ -56,8 +50,8 @@ public class IntermediateIssuer {
     @Inject
     VaultPKISecretEngineFactory pkiSecretEngineFactory;
 
-    @Inject
-    PEMUtils pemUtils;
+//    @Inject
+//    PEMUtils pemUtils;
 
     @Inject
     Logger LOGGER;
@@ -116,8 +110,11 @@ public class IntermediateIssuer {
                 .encodeToString(tlsCert.getBytes());
         response.tlsKey = Base64.getEncoder().encodeToString(tlsKey.getBytes());
 
-        response.keystore = Base64.getEncoder().encodeToString(pemUtils.toPKCS12(tlsKey, tlsCert, certificateRequest.keyStorePassword));
-        response.truststore = Base64.getEncoder().encodeToString(pemUtils.toPKCS12(ca, certificateRequest.keyStorePassword));
+//        response.keystore = Base64.getEncoder()
+//                .encodeToString(pemUtils.toPKCS12(tlsKey, tlsCert,
+//                        certificateRequest.keyStorePassword));
+//        response.truststore = Base64.getEncoder().encodeToString(
+//                pemUtils.toPKCS12(ca, certificateRequest.keyStorePassword));
 
         return response;
     }

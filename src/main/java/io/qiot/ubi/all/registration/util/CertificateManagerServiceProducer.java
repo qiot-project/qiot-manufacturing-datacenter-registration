@@ -57,38 +57,37 @@ public class CertificateManagerServiceProducer {
     }
 
     @Produces
-    public NameService getNameService(
-            CertificateOperation certificateOperation,
+    public NameService getNameService(CertificateOperation certificateOperation,
             SecretOperation secretOperation) {
         if ("true".equals(enabled)) {
 
-            LOGGER.debug("Cert Manager Name Service provisioning is enabled: {}", enabled);
+            LOGGER.debug(
+                    "Cert Manager Name Service provisioning is enabled: {}",
+                    enabled);
             return new CertManagerNameService(certificateOperation, LOGGER);
         }
 
         else {
 
-            LOGGER.debug("Default NameService is enabled: {}",
-                    enabled);
+            LOGGER.debug("Default NameService is enabled: {}", enabled);
             return new DefaultNameService();
         }
     }
 
     @Produces
-    public IssuerService getIssuerService(
-            IssuerOperation issuerOperation,
+    public IssuerService getIssuerService(IssuerOperation issuerOperation,
             SecretOperation secretOperation) {
         if ("true".equals(enabled)) {
 
-            LOGGER.debug("Cert Manager Issuer provisioning is enabled: {}", enabled);
+            LOGGER.debug("Cert Manager Issuer provisioning is enabled: {}",
+                    enabled);
             return new CertManagerIssuerService(issuerOperation,
                     secretOperation, LOGGER, issuerIntermediate);
         }
 
         else {
 
-            LOGGER.debug("Default Issuer provisioning is enabled: {}",
-                    enabled);
+            LOGGER.debug("Default Issuer provisioning is enabled: {}", enabled);
             return new DefaultIssuerService(LOGGER);
         }
     }

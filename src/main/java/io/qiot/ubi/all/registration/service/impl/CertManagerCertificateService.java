@@ -33,7 +33,7 @@ public class CertManagerCertificateService implements CertificateService {
     public static final String KEYSTORE_SECRET_PREFIX = "keystore-secret-";
     public static final String KEYSTORE_KEY_PASSWORD = "password";
     public static final String REGISTRATION_QIOT_IO_SERIAL = "registration.qiot.io/serial";
-    public static final String REGISTRATION_QIOT_IO_NAME = "registration.qiot.io/name"; 
+    public static final String REGISTRATION_QIOT_IO_NAME = "registration.qiot.io/name";
     final CertificateOperation certificateOperation;
     final SecretOperation secretOperation;
     final String issuer;
@@ -56,26 +56,23 @@ public class CertManagerCertificateService implements CertificateService {
     public CertificateResponse provision(CertificateRequest data)
             throws CertificateProvisionException {
         final String name = data.id.toString(); // unique name
-        final String commonName = data.name 
-                + data.domain
-                + "."
+        final String commonName = data.name + data.domain + "."
                 + certificateOperation.getNamespace() + domain;
 
         CertificateKeystores keystores = createKeyStoreSecret(data, name);
         final Certificate certificate = new CertificateBuilder()
-                .withNewMetadata()
-                        .withName(name)
-                        .withAnnotations(Collections.singletonMap(REGISTRATION_QIOT_IO_SERIAL, data.serial))
-                        .withLabels(Collections.singletonMap(REGISTRATION_QIOT_IO_NAME, data.name))
+                .withNewMetadata().withName(name)
+                .withAnnotations(Collections
+                        .singletonMap(REGISTRATION_QIOT_IO_SERIAL, data.serial))
+                .withLabels(Collections
+                        .singletonMap(REGISTRATION_QIOT_IO_NAME, data.name))
                 .endMetadata()
-                .withSpec(new CertificateSpecBuilder()
-                        .withSecretName(name)
+                .withSpec(new CertificateSpecBuilder().withSecretName(name)
                         .withCommonName(commonName)
-                        .withDnsNames(Arrays.asList(new String[] { commonName }))
+                        .withDnsNames(
+                                Arrays.asList(new String[] { commonName }))
                         .withNewIssuerRef().withName(issuer).endIssuerRef()
-                        .withKeystores(keystores)
-                        .withIsCA(data.ca)
-                        .build())
+                        .withKeystores(keystores).withIsCA(data.ca).build())
                 .build();
 
         certificateOperation.operation().create(certificate);
@@ -85,9 +82,8 @@ public class CertManagerCertificateService implements CertificateService {
         return certificateOperation.isReady(name);
     }
 
-
-    private CertificateKeystores
-            createKeyStoreSecret(CertificateRequest data, String id) {
+    private CertificateKeystores createKeyStoreSecret(CertificateRequest data,
+            String id) {
 
         final String keyStorePassword = data.keyStorePassword;
         if (keyStorePassword != null && !"".equals(keyStorePassword)) {
@@ -99,19 +95,19 @@ public class CertManagerCertificateService implements CertificateService {
                     .withNewMetadata().withName(secretName)
                     .withAnnotations(Collections.singletonMap(
                             REGISTRATION_QIOT_IO_SERIAL, data.serial))
-                    .withLabels(Collections.singletonMap(REGISTRATION_QIOT_IO_NAME, data.name))
+                    .withLabels(Collections
+                            .singletonMap(REGISTRATION_QIOT_IO_NAME, data.name))
                     .endMetadata().withStringData(Collections.singletonMap(
                             KEYSTORE_KEY_PASSWORD, keyStorePassword))
                     .build());
 
             return new CertificateKeystoresBuilder().withNewPkcs12()
-                        .withCreate(true)
-                        .withNewPasswordSecretRef(KEYSTORE_KEY_PASSWORD, secretName)
-                        .endPkcs12()
-                        .build();
+                    .withCreate(true)
+                    .withNewPasswordSecretRef(KEYSTORE_KEY_PASSWORD, secretName)
+                    .endPkcs12().build();
         }
         throw new IllegalArgumentException(
-                "KeyStorePassword is undedifined for serial: "
-                        + data.serial + ", name: " + data.name);
+                "KeyStorePassword is undedifined for serial: " + data.serial
+                        + ", name: " + data.name);
     }
 }

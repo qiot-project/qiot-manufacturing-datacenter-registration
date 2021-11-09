@@ -8,8 +8,7 @@ import io.qiot.ubi.all.registration.exception.IssuerProvisionException;
  *
  **/
 public interface IssuerService {
-    
-    public void provision(
-        CAIssuerRequest issuerRequest)
-        throws IssuerProvisionException;
+
+    public void provision(CAIssuerRequest issuerRequest)
+            throws IssuerProvisionException;
 }

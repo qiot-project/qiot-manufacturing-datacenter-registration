@@ -26,17 +26,11 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * @author mmascia
  */
 @ApplicationScoped
-@RegisterForReflection(targets = {Issuer.class, 
-    IssuerSpec.class, 
-    IssuerCondition.class, 
-    ObjectReference.class, 
-    IssuerList.class,
-    CAIssuer.class,
-    Map.class,
-    List.class,
-    IssuerStatus.class})
+@RegisterForReflection(targets = { Issuer.class, IssuerSpec.class,
+        IssuerCondition.class, ObjectReference.class, IssuerList.class,
+        CAIssuer.class, Map.class, List.class, IssuerStatus.class })
 public class IssuerOperation {
-   
+
     @ConfigProperty(name = "quarkus.kubernetes-client.namespace")
     String namespace;
 
@@ -49,9 +43,9 @@ public class IssuerOperation {
     @Inject
     Logger LOGGER;
 
-
     public MixedOperation<Issuer, IssuerList, Resource<Issuer>> operation() {
-        return new DefaultCertManagerClient().inNamespace(namespace).v1().issuers();
+        return new DefaultCertManagerClient().inNamespace(namespace).v1()
+                .issuers();
     }
 
     public String getNamespace() {

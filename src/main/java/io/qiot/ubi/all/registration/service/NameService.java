@@ -6,6 +6,6 @@ import java.util.UUID;
  * @author mmascia
  */
 public interface NameService {
-    
+
     String getName(UUID id);
 }

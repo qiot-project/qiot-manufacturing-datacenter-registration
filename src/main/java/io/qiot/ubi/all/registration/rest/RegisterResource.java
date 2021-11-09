@@ -19,7 +19,6 @@ import io.qiot.ubi.all.registration.service.CertificateService;
 import io.qiot.ubi.all.registration.service.NameService;
 import io.qiot.ubi.all.registration.vault.IntermediateIssuer;
 
-
 @Path("/register")
 @ApplicationScoped
 public class RegisterResource {
@@ -55,7 +54,7 @@ public class RegisterResource {
             @Valid CertificateRequest request) throws Exception {
 
         LOGGER.debug("Received cartificate request: {}", request);
-        
+
         CertificateResponse response = null;
 
         if (request.ca) {
@@ -65,8 +64,8 @@ public class RegisterResource {
         }
 
         LOGGER.debug(
-            "Successfully provisioned certificates for the registration request \n{}",
-            request);
+                "Successfully provisioned certificates for the registration request \n{}",
+                request);
 
         LOGGER.debug("Create response: {}", response);
         return response;

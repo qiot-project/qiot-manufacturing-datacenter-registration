@@ -13,7 +13,7 @@ public class CertificateProvisionException extends Exception {
      * 
      */
     public CertificateProvisionException() {
-        
+
     }
 
     /**
@@ -21,7 +21,7 @@ public class CertificateProvisionException extends Exception {
      */
     public CertificateProvisionException(String message) {
         super(message);
-        
+
     }
 
     /**
@@ -29,7 +29,7 @@ public class CertificateProvisionException extends Exception {
      */
     public CertificateProvisionException(Throwable cause) {
         super(cause);
-        
+
     }
 
     /**
@@ -38,7 +38,7 @@ public class CertificateProvisionException extends Exception {
      */
     public CertificateProvisionException(String message, Throwable cause) {
         super(message, cause);
-        
+
     }
 
     /**
@@ -50,7 +50,7 @@ public class CertificateProvisionException extends Exception {
     public CertificateProvisionException(String message, Throwable cause,
             boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
-        
+
     }
 
 }

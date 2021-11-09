@@ -28,13 +28,12 @@ public class IssuerResource {
     @Inject
     IssuerService issuerService;
 
-
     @Inject
     Logger LOGGER;
 
-   /**
-     * Creates a new Issuer resource on the same registration namespace.
-     * issuer -> intermediate(s) -> root
+    /**
+     * Creates a new Issuer resource on the same registration namespace. issuer
+     * -> intermediate(s) -> root
      * 
      */
     @Transactional
@@ -42,16 +41,18 @@ public class IssuerResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response provisionIssuer( @Valid CAIssuerRequest issuerRequest) throws Exception {
+    public Response provisionIssuer(@Valid CAIssuerRequest issuerRequest)
+            throws Exception {
 
         LOGGER.debug("Received request: {}", issuerRequest);
         try {
             this.issuerService.provision(issuerRequest);
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage()).build();
         }
         return Response.status(Status.CREATED).build();
     }
-    
+
 }

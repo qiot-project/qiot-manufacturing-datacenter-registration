@@ -14,7 +14,6 @@ import io.qiot.ubi.all.registration.exception.CertificateProvisionException;
  **/
 public interface CertificateService {
 
-    public CertificateResponse provision(
-        CertificateRequest certificateRequest)
-        throws CertificateProvisionException;
+    public CertificateResponse provision(CertificateRequest certificateRequest)
+            throws CertificateProvisionException;
 }
