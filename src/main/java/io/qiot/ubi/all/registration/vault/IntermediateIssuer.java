@@ -1,16 +1,24 @@
 package io.qiot.ubi.all.registration.vault;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.bouncycastle.jce.provider.PEMUtil;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import io.qiot.ubi.all.registration.domain.CertificateRequest;
 import io.qiot.ubi.all.registration.domain.CertificateResponse;
+import io.qiot.ubi.all.registration.util.PEMUtils;
 import io.quarkus.vault.VaultPKISecretEngine;
 import io.quarkus.vault.VaultPKISecretEngineFactory;
 import io.quarkus.vault.VaultSystemBackendEngine;
@@ -31,67 +39,100 @@ import io.quarkus.vault.sys.VaultSecretEngine;
  */
 @ApplicationScoped
 public class IntermediateIssuer {
-   
 
     @ConfigProperty(name = "quarkus.kubernetes-client.namespace")
-    String namespace;    
+    String namespace;
     @ConfigProperty(name = "qiot.cert-manager.domain")
-    String domain;    
+    String domain;
     @ConfigProperty(name = "qiot.cert-manager.baseDomain")
     String baseDomain;
     @ConfigProperty(name = "quarkus.qiot.vault.ttl")
     String timeTolive;
-    
+
     @Inject
     VaultSystemBackendEngine systemBackendEngine;
     @Inject
     VaultPKISecretEngineFactory pkiSecretEngineFactory;
+
+    @Inject
+    PEMUtils pemUtils;
+
     @Inject
     Logger LOGGER;
 
-
-    public CertificateResponse enable(CertificateRequest certificateRequest) {
+    public CertificateResponse enable(CertificateRequest certificateRequest)
+            throws KeyStoreException, NoSuchAlgorithmException,
+            CertificateException, IOException {
         final String mountRootName = namespace + "-pki";
-        final String mountIntemediateName = namespace + "-pki-" + certificateRequest.name;
+        final String mountIntemediateName = namespace + "-pki-"
+                + certificateRequest.name;
         final String commonName = certificateRequest.name + domain;
-        final String k8sInternalService = certificateRequest.name + "." + namespace + ".svc";
-        final String routeEndpoint = certificateRequest.name + "-" + namespace + baseDomain;
+        final String k8sInternalService = certificateRequest.name + "."
+                + namespace + ".svc";
+        final String routeEndpoint = certificateRequest.name + "-" + namespace
+                + baseDomain;
         final List<String> sAN = List.of(k8sInternalService, routeEndpoint);
 
         // Enable Intermediate CA
         EnableEngineOptions options = new EnableEngineOptions()
-            .setMaxLeaseTimeToLive(timeTolive);
-        systemBackendEngine.enable(VaultSecretEngine.PKI, mountIntemediateName, certificateRequest.name + " - Intermediate CA", options);
+                .setMaxLeaseTimeToLive(timeTolive);
+        systemBackendEngine.enable(VaultSecretEngine.PKI, mountIntemediateName,
+                certificateRequest.name + " - Intermediate CA", options);
 
-        VaultPKISecretEngine rootPKIEngine = pkiSecretEngineFactory.engine(mountRootName);
-        VaultPKISecretEngine intermediatePKIEngine = pkiSecretEngineFactory.engine(mountIntemediateName);
+        VaultPKISecretEngine rootPKIEngine = pkiSecretEngineFactory
+                .engine(mountRootName);
+        VaultPKISecretEngine intermediatePKIEngine = pkiSecretEngineFactory
+                .engine(mountIntemediateName);
 
         // Start Certificate Sign Request
         GenerateIntermediateCSROptions generateOptions = new GenerateIntermediateCSROptions()
-            .setSubjectCommonName(commonName)
-            .setSubjectAlternativeNames(sAN)
-            .setExportPrivateKey(true)
-            .setFormat(DataFormat.PEM);
-        GeneratedIntermediateCSRResult intermediateCSRResult = intermediatePKIEngine.generateIntermediateCSR(generateOptions);
+                .setSubjectCommonName(commonName)
+                .setSubjectAlternativeNames(sAN).setExportPrivateKey(true)
+                .setFormat(DataFormat.PEM);
+        GeneratedIntermediateCSRResult intermediateCSRResult = intermediatePKIEngine
+                .generateIntermediateCSR(generateOptions);
 
-        String tlsKey = ((PrivateKeyData.PEM) intermediateCSRResult.privateKey).getData();
-        
+        String tlsKey = ((PrivateKeyData.PEM) intermediateCSRResult.privateKey)
+                .getData();
+
         SignIntermediateCAOptions signIntermediateCAOptions = new SignIntermediateCAOptions()
-            .setFormat(DataFormat.PEM)
-            .setTimeToLive(timeTolive);
-        
-        PEM intermediateCSRPEM = (CSRData.PEM) intermediateCSRResult.csr;
-        SignedCertificate signedCertificate = rootPKIEngine.signIntermediateCA(intermediateCSRPEM.getData(), signIntermediateCAOptions);
+                .setFormat(DataFormat.PEM).setTimeToLive(timeTolive);
 
-        String tlsCert = ((CertificateData.PEM) signedCertificate.certificate).getData();
+        PEM intermediateCSRPEM = (CSRData.PEM) intermediateCSRResult.csr;
+        SignedCertificate signedCertificate = rootPKIEngine.signIntermediateCA(
+                intermediateCSRPEM.getData(), signIntermediateCAOptions);
+
+        String tlsCert = ((CertificateData.PEM) signedCertificate.certificate)
+                .getData();
+        String ca = ((CertificateData.PEM) signedCertificate.issuingCA)
+                .getData();
+
         intermediatePKIEngine.setSignedIntermediateCA(tlsCert);
 
         // Send to the caller the signed Intermediate CA.
         CertificateResponse response = new CertificateResponse();
-        response.tlsCert = Base64.getEncoder().encodeToString(tlsCert.getBytes());
+        response.tlsCert = Base64.getEncoder()
+                .encodeToString(tlsCert.getBytes());
         response.tlsKey = Base64.getEncoder().encodeToString(tlsKey.getBytes());
 
         // TODO: to p12
+        KeyStore keystore = pemUtils.toPKCS12(tlsCert, ca,
+                certificateRequest.keyStorePassword);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+            keystore.store(baos,
+                    certificateRequest.keyStorePassword.toCharArray());
+            response.keystore = Base64.getEncoder()
+                    .encodeToString(baos.toByteArray());
+        }
+
+        KeyStore truststore = pemUtils.toPKCS12(ca, "",
+                certificateRequest.keyStorePassword);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+            truststore.store(baos,
+                    certificateRequest.keyStorePassword.toCharArray());
+            response.truststore = Base64.getEncoder()
+                    .encodeToString(baos.toByteArray());
+        }
 
         return response;
     }
