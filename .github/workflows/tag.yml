@@ -46,10 +46,10 @@ jobs:
         env:
            ARTIFACTORY_USERNAME_REF: ${{ secrets.ARTIFACTORY_USERNAME }}
            ARTIFACTORY_TOKEN_REF: ${{ secrets.ARTIFACTORY_TOKEN }}
-        run: mvn -B -Pprod,native deploy
+        run: mvn -B -Pprod deploy
       - name: Push Image
         run: |
-          mvn -B -Pprod,native oc:build oc:push                          \
+          mvn -B -Pprod oc:build oc:push                          \
           -Djkube.docker.push.username=${{ secrets.QUAY_USERNAME }}      \
           -Djkube.docker.push.password=${{ secrets.QUAY_PASSWORD }}
 
