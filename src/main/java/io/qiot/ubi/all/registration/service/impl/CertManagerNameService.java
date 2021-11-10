@@ -22,8 +22,9 @@ public class CertManagerNameService implements NameService {
 
     final CertificateOperation certificateOperation;
     final Logger LOGGER;
-    
-    public CertManagerNameService(CertificateOperation certificateOperation, Logger LOGGER) {
+
+    public CertManagerNameService(CertificateOperation certificateOperation,
+            Logger LOGGER) {
         this.certificateOperation = certificateOperation;
         this.LOGGER = LOGGER;
     }
@@ -31,13 +32,16 @@ public class CertManagerNameService implements NameService {
     @Override
     public String getName(UUID id) {
 
-        Resource<Certificate> resource = certificateOperation.operation().withName(id.toString());
+        Resource<Certificate> resource = certificateOperation.operation()
+                .withName(id.toString());
         Certificate certificate = resource.get();
         if (certificate == null) {
             throw new RuntimeException("Factory " + id + " not registered");
         }
-        final Map<String, String> labels = certificate.getMetadata().getLabels();
-        return labels.get(CertManagerCertificateService.REGISTRATION_QIOT_IO_NAME);
+        final Map<String, String> labels = certificate.getMetadata()
+                .getLabels();
+        return labels
+                .get(CertManagerCertificateService.REGISTRATION_QIOT_IO_NAME);
     }
-    
+
 }

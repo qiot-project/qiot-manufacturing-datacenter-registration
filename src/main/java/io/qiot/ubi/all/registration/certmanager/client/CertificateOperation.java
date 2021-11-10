@@ -36,18 +36,12 @@ import io.smallrye.mutiny.subscription.UniEmitter;
  * @author mmascia
  */
 @ApplicationScoped
-@RegisterForReflection(targets = {Certificate.class, 
-    CertificateSpec.class, 
-    CertificateCondition.class, 
-    ObjectReference.class, 
-    CertificateList.class, 
-    Map.class,
-    CertificateKeystores.class,
-    PKCS12Keystore.class,
-    SecretKeySelector.class,
-    CertificateStatus.class})
+@RegisterForReflection(targets = { Certificate.class, CertificateSpec.class,
+        CertificateCondition.class, ObjectReference.class,
+        CertificateList.class, Map.class, CertificateKeystores.class,
+        PKCS12Keystore.class, SecretKeySelector.class,
+        CertificateStatus.class })
 public class CertificateOperation {
-
 
     @ConfigProperty(name = "quarkus.kubernetes-client.namespace")
     String namespace;
@@ -62,7 +56,8 @@ public class CertificateOperation {
     Logger LOGGER;
 
     public MixedOperation<Certificate, CertificateList, Resource<Certificate>> operation() {
-        return new DefaultCertManagerClient().inNamespace(namespace).v1().certificates();
+        return new DefaultCertManagerClient().inNamespace(namespace).v1()
+                .certificates();
     }
 
     public String getNamespace() {
@@ -71,7 +66,7 @@ public class CertificateOperation {
 
     public CertificateResponse isReady(String name) {
 
-        Uni<CertificateResponse> uni = Uni.createFrom().emitter(em ->  {
+        Uni<CertificateResponse> uni = Uni.createFrom().emitter(em -> {
             CertificateWatcher watcher = new CertificateWatcher(em);
             Watch watch = this.operation().withName(name).watch(watcher);
             watcher.setWatch(watch);
@@ -94,32 +89,36 @@ public class CertificateOperation {
 
         @Override
         public void eventReceived(Action action, Certificate resource) {
-            if(this.watch != null && Action.MODIFIED.equals(action)) {
+            if (this.watch != null && Action.MODIFIED.equals(action)) {
                 String name = resource.getMetadata().getName();
                 LOGGER.info("Watch Certificate {}: {}", action, name);
-                List<CertificateCondition> conditions = resource.getStatus().getConditions();
+                List<CertificateCondition> conditions = resource.getStatus()
+                        .getConditions();
                 if (conditions.size() > 0) {
                     CertificateCondition condition = conditions.get(0);
                     if ("True".equals(condition.getStatus())) {
                         Secret secret = kubernetesClient.secrets()
-                            .inNamespace(namespace)
-                            .withName(resource.getSpec().getSecretName())
-                            .get();
-                        if(secret != null) {
-                            String keystore = secret.getData().get("keystore.p12");
-                            String truststore = secret.getData().get("truststore.p12");
+                                .inNamespace(namespace)
+                                .withName(resource.getSpec().getSecretName())
+                                .get();
+                        if (secret != null) {
+                            String keystore = secret.getData()
+                                    .get("keystore.p12");
+                            String truststore = secret.getData()
+                                    .get("truststore.p12");
                             String tlsCert = secret.getData().get("tls.crt");
                             String tlsKey = secret.getData().get("tls.key");
 
-                            if(keystore != null && truststore != null) {
+                            if (keystore != null && truststore != null) {
                                 CertificateResponse registerResponse = new CertificateResponse();
-                                registerResponse.keystore=keystore;
-                                registerResponse.truststore=truststore;
-                                registerResponse.tlsCert=tlsCert;
-                                registerResponse.tlsKey=tlsKey;
-                                
+                                registerResponse.keystore = keystore;
+                                registerResponse.truststore = truststore;
+                                registerResponse.tlsCert = tlsCert;
+                                registerResponse.tlsKey = tlsKey;
+
                                 em.complete(registerResponse);
-                                LOGGER.debug("Certificate {} is ready: {}", name, resource);
+                                LOGGER.debug("Certificate {} is ready: {}",
+                                        name, resource);
                                 watch.close();
                             }
                         }

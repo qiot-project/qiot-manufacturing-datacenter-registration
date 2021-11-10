@@ -17,7 +17,7 @@ import io.qiot.ubi.all.registration.domain.CertificateRequest;
 import io.qiot.ubi.all.registration.domain.CertificateResponse;
 import io.qiot.ubi.all.registration.service.CertificateService;
 import io.qiot.ubi.all.registration.service.NameService;
-
+import io.qiot.ubi.all.registration.vault.IntermediateIssuer;
 
 @Path("/register")
 @ApplicationScoped
@@ -25,6 +25,9 @@ public class RegisterResource {
 
     @Inject
     CertificateService certificateService;
+
+    @Inject
+    IntermediateIssuer intermediateIssuer;
 
     @Inject
     NameService nameService;
@@ -49,16 +52,16 @@ public class RegisterResource {
     @Produces(MediaType.APPLICATION_JSON)
     public CertificateResponse provisionCertificate(
             @Valid CertificateRequest request) throws Exception {
+
         LOGGER.debug("Received cartificate request: {}", request);
 
-        /*
-         * In case of intermediate ca, ignore the domain.
-         */
-        if (request.ca) {
-            request.domain = "";
-        }
+        CertificateResponse response = null;
 
-        CertificateResponse response = certificateService.provision(request);
+        if (request.ca) {
+            response = intermediateIssuer.enable(request);
+        } else {
+            response = certificateService.provision(request);
+        }
 
         LOGGER.debug(
                 "Successfully provisioned certificates for the registration request \n{}",

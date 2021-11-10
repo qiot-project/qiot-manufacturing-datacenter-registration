@@ -13,7 +13,7 @@ import io.qiot.ubi.all.registration.domain.CAIssuerRequest;
 import io.qiot.ubi.all.registration.exception.IssuerProvisionException;
 import io.qiot.ubi.all.registration.service.IssuerService;
 
-/** 
+/**
  * @author mmascia
  */
 @ApplicationScoped
@@ -28,7 +28,8 @@ public class DefaultIssuerService implements IssuerService {
     }
 
     @Override
-    public void provision(CAIssuerRequest issuerRequest) throws IssuerProvisionException {
+    public void provision(CAIssuerRequest issuerRequest)
+            throws IssuerProvisionException {
 
         this.LOGGER.warn("Not active - only with Cert Manager functionality");
     }
