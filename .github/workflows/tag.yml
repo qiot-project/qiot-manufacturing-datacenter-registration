@@ -50,7 +50,7 @@ jobs:
       - name: Push Image
         run: |
           mvn -B -Pprod oc:build oc:push                          \
-          -Djkube.docker.push.username=${{ secrets.QUAY_USERNAME }}      \
-          -Djkube.docker.push.password=${{ secrets.QUAY_PASSWORD }}
+          -Djkube.docker.push.username=${{ secrets.QUAY_ALL_USERNAME }}      \
+          -Djkube.docker.push.password=${{ secrets.QUAY_ALL_PASSWORD }}
 
       # TODO: Update gitops repo

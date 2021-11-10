@@ -53,6 +53,6 @@ jobs:
         run: mvn -B -Pprod deploy
       - name: Push Image
         run: |
-          mvn -B -Pprod oc:build oc:push                          \
-          -Djkube.docker.push.username=${{ secrets.QUAY_USERNAME }}      \
-          -Djkube.docker.push.password=${{ secrets.QUAYs_PASSWORD }}
+          mvn -B -Pprod,native oc:build oc:push                          \
+          -Djkube.docker.push.username=${{ secrets.QUAY_ALL_USERNAME }}      \
+          -Djkube.docker.push.password=${{ secrets.QUAY_ALL_PASSWORD }}
