@@ -9,6 +9,9 @@ import javax.enterprise.inject.Typed;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.fabric8.certmanager.api.model.v1.Certificate;
 import io.fabric8.certmanager.api.model.v1.CertificateBuilder;
 import io.fabric8.certmanager.api.model.v1.CertificateKeystores;
@@ -39,6 +42,7 @@ public class CertManagerCertificateService implements CertificateService {
     final String issuer;
     final String domain;
     final Logger LOGGER;
+    final ObjectMapper MAPPER;
 
     public CertManagerCertificateService(
             CertificateOperation certificateOperation,
@@ -50,14 +54,26 @@ public class CertManagerCertificateService implements CertificateService {
         this.LOGGER = log;
         this.issuer = issuer;
         this.domain = domain;
+        this.MAPPER = new ObjectMapper();
     }
 
     @Override
     public CertificateResponse provision(CertificateRequest data)
             throws CertificateProvisionException {
+        try {
+            LOGGER.info(
+                    "Attempring to generate a certificate from the following data: {}",
+                    MAPPER.writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(data));
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         final String name = data.id.toString(); // unique name
+        LOGGER.info("The UNIQUE_NAME for this request is: {}", name);
         final String commonName = data.name + data.domain + "."
                 + certificateOperation.getNamespace() + domain;
+        LOGGER.info("The COMMON_NAME for this request is: {}", commonName);
 
         CertificateKeystores keystores = createKeyStoreSecret(data, name);
         final Certificate certificate = new CertificateBuilder()
@@ -77,7 +93,9 @@ public class CertManagerCertificateService implements CertificateService {
 
         certificateOperation.operation().create(certificate);
 
-        LOGGER.debug("Certificate creation {} ", certificate);
+        LOGGER.info(
+                "Certificate successfully created for UNIQUE_NAME={} and COMMON_NAME={}: \n{}",
+                name, commonName, certificate);
 
         return certificateOperation.isReady(name);
     }
