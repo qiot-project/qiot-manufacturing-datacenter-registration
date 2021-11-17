@@ -54,3 +54,5 @@ jobs:
           -Djkube.docker.push.password=${{ secrets.QUAY_ALL_PASSWORD }}
 
       # TODO: Update gitops repo
+
+      
