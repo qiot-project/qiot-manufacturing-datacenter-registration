@@ -21,7 +21,7 @@ on:
 jobs:
   call-nightly-build:
 #    environment: development
-    uses: qiot-project/qiot-ubi-all-reusable-workflows/.github/workflows/app-build-deploy.yml@main
+    uses: qiot-project/qiot-ubi-all-reusable-workflows/.github/workflows/app-snapshot.yml@main
     # Use the "secrets" keyword to pass named secrets.
     secrets:
       ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
