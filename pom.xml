@@ -6,23 +6,29 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.qiot.ubi.all</groupId>
     <artifactId>registration-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <parent>
         <groupId>io.qiot.ubi</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.5</version>
     </parent>
+    <properties>
+        <registration-commons.version>1.0.9</registration-commons.version>
+        <all-utilities.version>1.0.2</all-utilities.version>
+        <certmanager.version>5.8.0</certmanager.version>
+    </properties>
     <scm>
         <connection>scm:git:https://github.com/qiot-project/qiot-ubi-all-registration.git</connection>
         <developerConnection>scm:git:https://github.com/qiot-project/qiot-ubi-all-registration.git/</developerConnection>
         <url>https://github.com/qiot-project/qiot-ubi-all-registration</url>
         <tag>HEAD</tag>
     </scm>
+
     <repositories>
         <repository>
             <id>qiot-central</id>
             <name>a0lz61zjcqpyh-artifactory-primary-0-releases</name>
-            <url>https://qiotproject.jfrog.io/artifactory/qiot-libs-release-local</url>
+            <url>https://hackfest.jfrog.io/artifactory/hackfest-libs-release</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -30,12 +36,51 @@
         <repository>
             <id>qiot-snapshots</id>
             <name>a0lz61zjcqpyh-artifactory-primary-0-snapshots</name>
-            <url>https://qiotproject.jfrog.io/artifactory/qiot-libs-snapshot-local</url>
+            <url>https://hackfest.jfrog.io/artifactory/hackfest-libs-snapshot</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>qiot-central</id>
+            <name>a0lz61zjcqpyh-artifactory-primary-0-releases</name>
+            <url>https://hackfest.jfrog.io/artifactory/hackfest-libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>qiot-snapshots</id>
+            <name>a0lz61zjcqpyh-artifactory-primary-0-snapshots</name>
+            <url>https://hackfest.jfrog.io/artifactory/hackfest-libs-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>qiot-central</id>
+            <name>a0lz61zjcqpyh-artifactory-primary-0-releases</name>
+            <url>https://hackfest.jfrog.io/artifactory/hackfest-libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <snapshotRepository>
+            <id>qiot-snapshots</id>
+            <name>a0lz61zjcqpyh-artifactory-primary-0-snapshots</name>
+            <url>https://hackfest.jfrog.io/artifactory/hackfest-libs-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -53,12 +98,12 @@
         <dependency>
             <groupId>io.qiot.ubi.all</groupId>
             <artifactId>registration-commons</artifactId>
-            <version>1.0.7</version>
+            <version>${registration-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>io.qiot.ubi.all</groupId>
             <artifactId>utilities</artifactId>
-            <version>1.0.0</version>
+            <version>${all-utilities.version}</version>
         </dependency>
         <!-- REST -->
         <dependency>
@@ -84,15 +129,13 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>certmanager-client</artifactId>
-            <version>5.8.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>certmanager-server-mock</artifactId>
-            <version>5.8.0</version>
         </dependency>
         <dependency>
-            <groupId>io.quarkus</groupId>
+            <groupId>io.quarkiverse.vault</groupId>
             <artifactId>quarkus-vault</artifactId>
         </dependency>
         <dependency>
@@ -127,7 +170,6 @@
             <plugin>
                 <groupId>org.eclipse.jkube</groupId>
                 <artifactId>openshift-maven-plugin</artifactId>
-                <version>1.3.0</version>
             </plugin>
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
@@ -171,51 +213,6 @@
                 <jkube.build.strategy>jib</jkube.build.strategy>
                 <jkube.generator.name>quay.io/qiotproject/all-registration:${project.version}</jkube.generator.name>
             </properties>
-        </profile>
-        <profile>
-            <id>github-actions</id>
-            <activation>
-                <property>
-                    <name>env.BUILD_ENV</name>
-                    <value>github-actions</value>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>qiot-central</id>
-                    <name>a0lz61zjcqpyh-artifactory-primary-0-releases</name>
-                    <url>https://qiotproject.jfrog.io/artifactory/qiot-libs-release-local</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                <repository>
-                    <id>qiot-snapshots</id>
-                    <name>a0lz61zjcqpyh-artifactory-primary-0-snapshots</name>
-                    <url>https://qiotproject.jfrog.io/artifactory/qiot-libs-snapshot-local</url>
-                    <releases>
-                        <enabled>false</enabled>
-                    </releases>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>qiot-central</id>
-                    <name>a0lz61zjcqpyh-artifactory-primary-0-releases</name>
-                    <url>https://qiotproject.jfrog.io/artifactory/qiot-libs-release-local</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </pluginRepository>
-                <pluginRepository>
-                    <id>qiot-snapshots</id>
-                    <name>a0lz61zjcqpyh-artifactory-primary-0-snapshots</name>
-                    <url>https://qiotproject.jfrog.io/artifactory/qiot-libs-snapshot-local</url>
-                    <releases>
-                        <enabled>false</enabled>
-                    </releases>
-                </pluginRepository>
-            </pluginRepositories>
         </profile>
         <profile>
             <id>native</id>
