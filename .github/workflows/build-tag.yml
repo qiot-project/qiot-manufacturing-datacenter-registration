@@ -25,6 +25,7 @@ jobs:
     uses: andreabattaglia/reusable-workflows/.github/workflows/build-tag.yml@main
     # To pass named inputs to a called workflow, use the "with" keyword in a job.
     with:
+      TAG_NAME: ${{ github.ref_name }}
       IMAGE_VERSION: ${{needs.define-variables.outputs.output1}}
     # Use the "secrets" keyword to pass named secrets.
     secrets:
