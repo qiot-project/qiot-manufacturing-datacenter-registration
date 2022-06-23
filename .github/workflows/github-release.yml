@@ -27,7 +27,7 @@ on:
 jobs:
   call-github-release:
 #    environment: development
-    uses: andreabattaglia/reusable-workflows/.github/workflows/github-release.yml@main
+    uses: qiot-project/qiot-ubi-all-reusable-workflows/.github/workflows/app-github-release.yml@main
     # To pass named inputs to a called workflow, use the "with" keyword in a job.
     with:
       ACTOR: ${GITHUB_ACTOR}
