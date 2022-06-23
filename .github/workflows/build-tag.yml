@@ -1,25 +1,31 @@
 name: Build TAG (from main branch)
 
 on:
-  release:
-    types:
-      - created
-    paths-ignore:
-      - .github/workflows/**
-      - .gitignore
-      - build.sh
-      - build-aarch64.sh
-      - build-jvm.sh
-      - LICENSE
-      - mvnw
-      - mvnw.cmd
-      - README.md
-      - release.sh
+  on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '*'           # Push events to every tag not containing /
 
 jobs:
+  define-variables:
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step2.outputs.image-name }}
+    steps:
+      - id: step1
+        name: Checkout project
+        uses: actions/checkout@v3
+      - id: step2
+        name: Set image tag version
+        run: echo "::set-output name=image-name::${GITHUB_REF##refs/tags/v}"
   call-build-tag:
+    needs: define-variables
 #    environment: development
     uses: andreabattaglia/reusable-workflows/.github/workflows/build-tag.yml@main
+    # To pass named inputs to a called workflow, use the "with" keyword in a job.
+    with:
+      IMAGE_VERSION: ${{needs.define-variables.outputs.output1}}
     # Use the "secrets" keyword to pass named secrets.
     secrets:
       ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
