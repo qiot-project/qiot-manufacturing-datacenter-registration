@@ -1,7 +1,6 @@
 name: Build TAG (from main branch)
 
 on:
-  on:
   push:
     # Pattern matched against refs/tags
     tags:        
