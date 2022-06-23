@@ -1,4 +1,4 @@
-name: Maven Release  (from new tag)
+name: Github release (from main)
 
 on:
   workflow_dispatch:
