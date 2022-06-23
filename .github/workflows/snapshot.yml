@@ -26,8 +26,8 @@ jobs:
     secrets:
       ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
       ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
-      QUAY_USERNAME: ${{ secrets.QUAY_OWN_USERNAME }}
-      QUAY_PASSWORD: ${{ secrets.QUAY_OWN_PASSWORD }}
+      QUAY_USERNAME: ${{ secrets.QUAY_ALL_USERNAME }}
+      QUAY_PASSWORD: ${{ secrets.QUAY_ALL_PASSWORD }}
     # Workflows that call reusable workflows in the same organization or enterprise
     #  can use the "inherit" keyword to implicitly pass the secrets.
       # secrets: inherit
