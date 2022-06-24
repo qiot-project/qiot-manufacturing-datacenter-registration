@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.qiot.ubi.all</groupId>
     <artifactId>registration-service</artifactId>
-    <version>1.0.7-SNAPSHOT</version>
+    <version>1.0.7</version>
     <parent>
         <groupId>io.qiot.ubi</groupId>
         <artifactId>parent</artifactId>
@@ -18,7 +18,7 @@
         <connection>scm:git:https://github.com/qiot-project/qiot-ubi-all-registration.git</connection>
         <developerConnection>scm:git:https://github.com/qiot-project/qiot-ubi-all-registration.git/</developerConnection>
         <url>https://github.com/qiot-project/qiot-ubi-all-registration</url>
-        <tag>HEAD</tag>
+        <tag>v1.0.7</tag>
     </scm>
 
     <repositories>
