@@ -1,12 +1,15 @@
-name: Build TAG (from main branch)
+name: Build container image on release created
 
 on:
   workflow_dispatch:
   
-  push:
-    # Pattern matched against refs/tags
-    tags:        
-      - '*'           # Push events to every tag not containing /
+  release:
+    types: [created]
+  
+#  push:
+#    # Pattern matched against refs/tags
+#    tags:
+#      - '*'           # Push events to every tag not containing /
 
 jobs:
   define-variables:
